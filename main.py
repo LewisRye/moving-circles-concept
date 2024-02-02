@@ -88,16 +88,11 @@ while running:
 
         cursor_pos = pygame.mouse.get_pos()
         if areaPlayBtn.collidepoint(cursor_pos):
-            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
             screen.blit(btnPlayHover, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 - 47.5))
         elif areaExitBtn.collidepoint(cursor_pos):
-            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
             screen.blit(btnExitHover, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 + 47.5))
         elif areaSettingsBtn.collidepoint(cursor_pos):
-            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
             screen.blit(btnSettingsHover, (screen.get_width() - 144 - 10, 10))
-        else:
-            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
         keys = pygame.key.get_pressed()
         if (keys[pygame.K_f]):
