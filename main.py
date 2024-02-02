@@ -54,7 +54,7 @@ class UI:
         self.font = pygame.font.SysFont(pygame.font.get_default_font(), 32)
     
     def render(self, screen):
-        self.text = self.font.render('ESC to QUIT', True, (255, 255, 255))
+        self.text = self.font.render('TAB to LEAVE | ESC to QUIT', True, (255, 255, 255))
         self.text_width = self.text.get_width()
         screen.blit(self.text, (screen.get_width() - self.text_width, 0))
         self.icon = pygame.transform.scale(icon, (50, 50))
@@ -102,6 +102,8 @@ while running:
         
         pygame.display.flip()
 
+        dt = clock.tick(60) / 1000
+
     # opening the settings UI
     if runningSettings:
         # implement settings UI here
@@ -124,6 +126,9 @@ while running:
             player_pos.x -= 500 * dt
         if (keys[pygame.K_d] or keys[pygame.K_RIGHT]) and player_pos.x < screen.get_width():
             player_pos.x += 500 * dt
+        if (keys[pygame.K_TAB]):
+            runningMenu = True
+            runningGame = False
         if (keys[pygame.K_ESCAPE]):
             running = False
 
@@ -133,7 +138,7 @@ while running:
         pygame.display.flip()
 
         # dt is delta time in seconds since last frame, loosely caps FPS
-        dt = clock.tick(240) / 1000
+        dt = clock.tick(165) / 1000
 
     # poll for events
     for event in pygame.event.get():
