@@ -9,7 +9,17 @@ pygame.init()
 display_info = pygame.display.Info()
 display_width = display_info.current_w
 display_height = display_info.current_h
-screen = pygame.display.set_mode((display_width, display_height), pygame.FULLSCREEN)
+
+
+#choose here whether to start in resizable or fullscreen
+#comment and uncomment appropriate lines
+screen = pygame.display.set_mode((700, 500), pygame.RESIZABLE)
+# screen = pygame.display.set_mode((display_width, display_height), pygame.FULLSCREEN)
+
+#change this value based on the starting screen
+fullscreen = False
+#change which key activates the fullscreen and resizable screen
+fullscreen_key = pygame.K_f
 
 # file system setup
 current_path = os.path.dirname(__file__)
@@ -23,6 +33,7 @@ btnExit = pygame.image.load(current_path + '/assets/btnExit.png')
 btnExitHover = pygame.image.load(current_path + '/assets/btnExitHover.png')
 btnMenu = pygame.image.load(current_path + '/assets/btnMenu.png')
 btnMenuHover = pygame.image.load(current_path + '/assets/btnMenuHover.png')
+
 
 clock = pygame.time.Clock()
 dt = 0
@@ -130,4 +141,16 @@ while running:
                 if areaMenuBtn.collidepoint(event.pos):
                     # handle menu click here
                     None
+
+        if event.type == pygame.KEYDOWN and event.key == fullscreen_key:
+            if fullscreen: 
+                screen = pygame.display.set_mode((700, 500), pygame.RESIZABLE)
+                fullscreen = False
+            else: 
+                screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+                fullscreen = True
+
+
+
+
 pygame.quit()
