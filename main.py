@@ -45,6 +45,10 @@ ui = UI()
 
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 pygame.display.toggle_fullscreen()
+
+runningGame = False
+runningMenu = True
+
 running = True
 
 while running:
@@ -53,34 +57,43 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    # fill the screen with a color to wipe away anything from last frame
-    screen.fill("black")
+    # opening the menu UI
+    if runningMenu:
+        screen.fill("black")
 
-    pygame.draw.circle(screen, "red", player_pos, 33)
+        keys = pygame.key.get_pressed()
+        if (keys[pygame.K_f]):
+            runningGame = True
+            runningMenu = False
 
-    keys = pygame.key.get_pressed()
-    if (keys[pygame.K_w] or keys[pygame.K_UP]) and player_pos.y > 0:
-        player_pos.y -= 500 * dt
-    if (keys[pygame.K_s] or keys[pygame.K_DOWN]) and player_pos.y < screen.get_height():
-        player_pos.y += 500 * dt
-    if (keys[pygame.K_a] or keys[pygame.K_LEFT]) and player_pos.x > 0:
-        player_pos.x -= 500 * dt
-    if (keys[pygame.K_d] or keys[pygame.K_RIGHT]) and player_pos.x < screen.get_width():
-        player_pos.x += 500 * dt
-    if (keys[pygame.K_F11]):
-        pygame.display.toggle_fullscreen()
-        pygame.time.delay(250)
-    if (keys[pygame.K_ESCAPE]):
-        running = False
+    if runningGame:
+        # fill the screen with a color to wipe away anything from last frame
+        screen.fill("black")
 
-    # flip() the display to put your work on screen
-    fps.render(screen)
-    ui.render(screen)
-    pygame.display.flip()
+        pygame.draw.circle(screen, "red", player_pos, 33)
 
-    # limits FPS
-    # dt is delta time in seconds since last frame, used for framerate-
-    # independent physics.
-    dt = clock.tick(240) / 1000
+        keys = pygame.key.get_pressed()
+        if (keys[pygame.K_w] or keys[pygame.K_UP]) and player_pos.y > 0:
+            player_pos.y -= 500 * dt
+        if (keys[pygame.K_s] or keys[pygame.K_DOWN]) and player_pos.y < screen.get_height():
+            player_pos.y += 500 * dt
+        if (keys[pygame.K_a] or keys[pygame.K_LEFT]) and player_pos.x > 0:
+            player_pos.x -= 500 * dt
+        if (keys[pygame.K_d] or keys[pygame.K_RIGHT]) and player_pos.x < screen.get_width():
+            player_pos.x += 500 * dt
+        if (keys[pygame.K_F11]):
+            pygame.display.toggle_fullscreen()
+            pygame.time.delay(250)
+        if (keys[pygame.K_ESCAPE]):
+            running = False
 
+        # flip() the display to put your work on screen
+        fps.render(screen)
+        ui.render(screen)
+        pygame.display.flip()
+
+        # limits FPS
+        # dt is delta time in seconds since last frame, used for framerate-
+        # independent physics.
+        dt = clock.tick(240) / 1000
 pygame.quit()
