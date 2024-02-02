@@ -100,7 +100,10 @@ while running:
             runningGame = True
             runningMenu = False
         
+        fps.render(screen)
         pygame.display.flip()
+
+        dt = clock.tick(165) / 1000
 
     # opening the settings UI
     if runningSettings:
@@ -133,7 +136,7 @@ while running:
         pygame.display.flip()
 
         # dt is delta time in seconds since last frame, loosely caps FPS
-        dt = clock.tick(240) / 1000
+        dt = clock.tick(165) / 1000
 
     # poll for events
     for event in pygame.event.get():
