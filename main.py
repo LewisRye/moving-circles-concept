@@ -25,7 +25,8 @@ current_path = os.path.dirname(__file__)
 icon = pygame.image.load(current_path + '/assets/appIcon.png')
 pygame.display.set_caption('Moving Circles Concept App')
 pygame.display.set_icon(icon)
-background = pygame.image.load(current_path + '/assets/background.jpg')
+current_background = None
+original_background = pygame.image.load(current_path + '/assets/background.jpg')
 btnPlay = pygame.image.load(current_path + '/assets/btnPlay.png')
 btnPlayHover = pygame.image.load(current_path + '/assets/btnPlayHover.png')
 btnExit = pygame.image.load(current_path + '/assets/btnExit.png')
@@ -74,8 +75,8 @@ while running:
     # opening the menu UI
     if runningMenu and not runningSettings:
         screen.fill("black")
-        background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
-        screen.blit(background, (0, 0))
+        current_background = pygame.transform.scale(original_background, (screen.get_width(), screen.get_height()))
+        screen.blit(current_background, (0, 0))
 
         areaPlayBtn = pygame.Rect(screen.get_width() / 2 - 152.5, screen.get_height() / 2 - 47.5, 305, 95)
         screen.blit(btnPlay, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 - 47.5))
