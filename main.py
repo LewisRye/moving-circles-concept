@@ -1,6 +1,7 @@
 # Example file showing a circle moving on screen
 import pygame
 import os
+from pygame import mixer;
 
 # pygame setup
 pygame.init()
@@ -10,6 +11,9 @@ display_info = pygame.display.Info()
 display_width = display_info.current_w
 display_height = display_info.current_h
 screen = pygame.display.set_mode((display_width, display_height), pygame.FULLSCREEN)
+
+
+
 
 # file system setup
 current_path = os.path.dirname(__file__)
@@ -23,6 +27,9 @@ btnExit = pygame.image.load(current_path + '/assets/btnExit.png')
 btnExitHover = pygame.image.load(current_path + '/assets/btnExitHover.png')
 btnMenu = pygame.image.load(current_path + '/assets/btnMenu.png')
 btnMenuHover = pygame.image.load(current_path + '/assets/btnMenuHover.png')
+mixer.music.load(current_path +'/assets/background.mp3')
+mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.03)
 
 clock = pygame.time.Clock()
 dt = 0
