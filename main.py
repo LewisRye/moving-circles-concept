@@ -13,10 +13,16 @@ screen = pygame.display.set_mode((display_width, display_height), pygame.RESIZAB
 
 # file system setup
 current_path = os.path.dirname(__file__)
-icon = pygame.image.load(current_path + '/icon.png')
-pygame.display.set_caption('Moving Circles Concept')
+icon = pygame.image.load(current_path + '/assets/appIcon.png')
+pygame.display.set_caption('Moving Circles Concept App')
 pygame.display.set_icon(icon)
-
+background = pygame.image.load(current_path + '/assets/background.jpg')
+btnPlay = pygame.image.load(current_path + '/assets/btnPlay.png')
+btnPlayHover = pygame.image.load(current_path + '/assets/btnPlayHover.png')
+btnExit = pygame.image.load(current_path + '/assets/btnExit.png')
+btnExitHover = pygame.image.load(current_path + '/assets/btnExitHover.png')
+btnMenu = pygame.image.load(current_path + '/assets/btnMenu.png')
+btnMenuHover = pygame.image.load(current_path + '/assets/btnMenuHover.png')
 
 clock = pygame.time.Clock()
 dt = 0
@@ -34,7 +40,7 @@ class UI:
         self.font = pygame.font.SysFont(pygame.font.get_default_font(), 32)
     
     def render(self, screen):
-        self.text = self.font.render('F11: fullscreen | ESC: quit', True, (255, 255, 255))
+        self.text = self.font.render('ESC: quit', True, (255, 255, 255))
         self.text_width = self.text.get_width()
         screen.blit(self.text, (screen.get_width() - self.text_width, 0))
         self.icon = pygame.transform.scale(icon, (50, 50))
@@ -52,19 +58,35 @@ runningMenu = True
 running = True
 
 while running:
-    # poll for events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
     # opening the menu UI
     if runningMenu:
         screen.fill("black")
+        background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
+        screen.blit(background, (0, 0))
+
+        areaPlayBtn = pygame.Rect(screen.get_width() / 2 - 152.5, screen.get_height() / 2 - 47.5, 305, 95)
+        screen.blit(btnPlay, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 - 47.5))
+
+        areaExitBtn = pygame.Rect(screen.get_width() / 2 - 152.5, screen.get_height() / 2 + 47.5, 305, 95)
+        screen.blit(btnExit, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 + 47.5))
+
+        areaMenuBtn = pygame.Rect(screen.get_width() - 144 - 10, 10, 144, 122) # there is an offset of 10px to avoid the button getting stuck in the corner
+        screen.blit(btnMenu, (screen.get_width() - 144 - 10, 10))
+
+        cursor_pos = pygame.mouse.get_pos()
+        if areaPlayBtn.collidepoint(cursor_pos):
+            screen.blit(btnPlayHover, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 - 47.5))
+        if areaExitBtn.collidepoint(cursor_pos):
+            screen.blit(btnExitHover, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 + 47.5))
+        if areaMenuBtn.collidepoint(cursor_pos):
+            screen.blit(btnMenuHover, (screen.get_width() - 144 - 10, 10))
 
         keys = pygame.key.get_pressed()
         if (keys[pygame.K_f]):
             runningGame = True
             runningMenu = False
+        
+        pygame.display.flip()
 
     if runningGame:
         # fill the screen with a color to wipe away anything from last frame
@@ -96,4 +118,19 @@ while running:
         # dt is delta time in seconds since last frame, used for framerate-
         # independent physics.
         dt = clock.tick(240) / 1000
+
+    # poll for events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if runningMenu:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if areaPlayBtn.collidepoint(event.pos):
+                    runningGame = True
+                    runningMenu = False
+                if areaExitBtn.collidepoint(event.pos):
+                    running = False
+                if areaMenuBtn.collidepoint(event.pos):
+                    # handle menu click here
+                    None
 pygame.quit()
