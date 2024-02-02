@@ -10,11 +10,9 @@ display_info = pygame.display.Info()
 display_width = display_info.current_w
 display_height = display_info.current_h
 
-
 #choose here whether to start in resizable or fullscreen
-#comment and uncomment appropriate lines
 screen = pygame.display.set_mode((700, 500), pygame.RESIZABLE)
-# screen = pygame.display.set_mode((display_width, display_height), pygame.FULLSCREEN)
+# screen = pygame.display.set_mode((display_width, display_height), pygame.FULLSCREEN) # use to begin in fs
 
 #change this value based on the starting screen
 fullscreen = False
@@ -31,8 +29,8 @@ btnPlay = pygame.image.load(current_path + '/assets/btnPlay.png')
 btnPlayHover = pygame.image.load(current_path + '/assets/btnPlayHover.png')
 btnExit = pygame.image.load(current_path + '/assets/btnExit.png')
 btnExitHover = pygame.image.load(current_path + '/assets/btnExitHover.png')
-btnMenu = pygame.image.load(current_path + '/assets/btnMenu.png')
-btnMenuHover = pygame.image.load(current_path + '/assets/btnMenuHover.png')
+btnSettings = pygame.image.load(current_path + '/assets/btnSettings.png')
+btnSettingsHover = pygame.image.load(current_path + '/assets/btnSettingsHover.png')
 
 
 clock = pygame.time.Clock()
@@ -64,12 +62,13 @@ player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 
 runningGame = False
 runningMenu = True
+runningSettings = False
 
 running = True
 
 while running:
     # opening the menu UI
-    if runningMenu:
+    if runningMenu and not runningSettings:
         screen.fill("black")
         background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
         screen.blit(background, (0, 0))
@@ -80,16 +79,16 @@ while running:
         areaExitBtn = pygame.Rect(screen.get_width() / 2 - 152.5, screen.get_height() / 2 + 47.5, 305, 95)
         screen.blit(btnExit, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 + 47.5))
 
-        areaMenuBtn = pygame.Rect(screen.get_width() - 144 - 10, 10, 144, 122) # there is an offset of 10px to avoid the button getting stuck in the corner
-        screen.blit(btnMenu, (screen.get_width() - 144 - 10, 10))
+        areaSettingsBtn = pygame.Rect(screen.get_width() - 144 - 10, 10, 144, 122) # offset 10px from the edge of the screen
+        screen.blit(btnSettings, (screen.get_width() - 144 - 10, 10))
 
         cursor_pos = pygame.mouse.get_pos()
         if areaPlayBtn.collidepoint(cursor_pos):
             screen.blit(btnPlayHover, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 - 47.5))
         if areaExitBtn.collidepoint(cursor_pos):
             screen.blit(btnExitHover, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 + 47.5))
-        if areaMenuBtn.collidepoint(cursor_pos):
-            screen.blit(btnMenuHover, (screen.get_width() - 144 - 10, 10))
+        if areaSettingsBtn.collidepoint(cursor_pos):
+            screen.blit(btnSettingsHover, (screen.get_width() - 144 - 10, 10))
 
         keys = pygame.key.get_pressed()
         if (keys[pygame.K_f]):
@@ -98,6 +97,12 @@ while running:
         
         pygame.display.flip()
 
+    # opening the settings UI
+    if runningSettings:
+        # implement settings UI here
+        None
+
+    # opening the game UI
     if runningGame:
         # fill the screen with a color to wipe away anything from last frame
         screen.fill("black")
@@ -122,15 +127,14 @@ while running:
         ui.render(screen)
         pygame.display.flip()
 
-        # limits FPS
-        # dt is delta time in seconds since last frame, used for framerate-
-        # independent physics.
+        # dt is delta time in seconds since last frame, loosely caps FPS
         dt = clock.tick(240) / 1000
 
     # poll for events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
         if runningMenu:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if areaPlayBtn.collidepoint(event.pos):
@@ -138,9 +142,8 @@ while running:
                     runningMenu = False
                 if areaExitBtn.collidepoint(event.pos):
                     running = False
-                if areaMenuBtn.collidepoint(event.pos):
-                    # handle menu click here
-                    None
+                if areaSettingsBtn.collidepoint(event.pos):
+                    runningSettings = True
 
         if event.type == pygame.KEYDOWN and event.key == fullscreen_key:
             if fullscreen: 
@@ -149,8 +152,5 @@ while running:
             else: 
                 screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
                 fullscreen = True
-
-
-
 
 pygame.quit()
