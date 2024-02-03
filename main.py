@@ -191,7 +191,7 @@ class UI:
             pygame.display.flip()
             dt = clock.tick(60) / 1000
 
-        # dt is delta time in seconds since last frame, loosely caps FPS
+        
         
 
 
