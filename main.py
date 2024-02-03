@@ -50,6 +50,10 @@ class FPS:
         screen.blit(self.text, (0, 0))
 
 class UI:
+    #this variable holds the method to render the current scene
+    #the variable is a pointer to the actual method definitions defined below
+    #to change scene, set this variable to the scene's method and return out of the current method
+    #the while loop will run the next scene's method true this variable
     current_page = None
 
     #change this value based on the starting screen
@@ -69,9 +73,11 @@ class UI:
         self.icon = pygame.transform.scale(icon, (50, 50))
         screen.blit(self.icon, (5, screen.get_height() - 55)) # offset by 5px so it is not stuck in the bottom left
 
+    #this the method to render the menu scene
     def menu(self):
+        #the screen and running variable are defined global
+        #the initialization of these variables do not exist in this scope rather outside it.
         global screen, running
-        f_key = False
         while True:
             screen.fill("black")
             current_background = pygame.transform.scale(original_background, (screen.get_width(), screen.get_height()))
@@ -96,10 +102,14 @@ class UI:
 
             keys = pygame.key.get_pressed()
 
+            #this is the example to switch to the game scene
+            # i just used the p key for example
             if keys[pygame.K_p]:
+                #you first change the current_page variable to the next scene you want to render
                 self.current_page = self.game
                 return                                
 
+            #when quitting the game, you just set running to false and return out the while loop will terminate the game
             elif keys[pygame.K_ESCAPE]:
                 running = False
                 return
@@ -188,16 +198,7 @@ class UI:
 fps = FPS()
 ui = UI()
 
-player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
-
-runningGame = False
-runningMenu = True
-runningSettings = False
-
-
-current = Pages.menu
 running = True
-
 while running:
     ui.current_page()
 
