@@ -3,6 +3,7 @@ import socket
 import platform
 import subprocess
 
+server = None
 
 def get_private_ip():
     system = platform.system()
@@ -15,7 +16,6 @@ def get_private_ip():
 
     address = subprocess.run(command, capture_output=True).stdout.decode('utf-8').strip()
     return address
-
 
 def start():
     server.listen()
@@ -32,7 +32,6 @@ def start():
         thread = threading.Thread(target=handle_client, args=(conn, addr))
         thread.start()
         print(f'[active connections] {threading.active_count() - 1}')
-
 
 def handle_client(conn, addr):
     print(f'[New Connection] {addr} connected')
@@ -57,13 +56,7 @@ def handle_client(conn, addr):
 
     conn.close()
 
-
 if __name__ == "__main__":
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((get_private_ip(), 5050))
     start()
-
-
-    
-
-    

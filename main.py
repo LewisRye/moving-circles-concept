@@ -147,6 +147,7 @@ class UI:
         while True:
             screen.fill("black")
             pygame.draw.circle(screen, "red", player_pos, 33)
+            dt = clock.tick(165) / 1000 # limit fps to 165 in game
 
             keys = pygame.key.get_pressed()
 
@@ -185,7 +186,6 @@ class UI:
                         return
 
             pygame.display.flip()
-            dt = clock.tick(165) / 1000 # limit fps to 165 in game
 
 fps = FPS()
 ui = UI()
