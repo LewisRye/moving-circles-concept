@@ -18,8 +18,6 @@ screen = pygame.display.set_mode((700, 500), pygame.RESIZABLE)
 
 init_screen = False
 
-
-
 # file system setup
 current_path = os.path.dirname(__file__)
 icon = pygame.image.load(current_path + '/assets/appIcon.png')
@@ -140,8 +138,7 @@ class UI:
                         self.fullscreen = True
 
             pygame.display.flip()
-
-        # dt = clock.tick(60) / 1000        
+            dt = clock.tick(60) / 1000 # limit fps to 60 in menu
     
     def game(self):
         global running, screen
@@ -162,13 +159,12 @@ class UI:
             if (keys[pygame.K_d] or keys[pygame.K_RIGHT]) and player_pos.x < screen.get_width():
                 player_pos.x += 500 * dt
             if (keys[pygame.K_TAB]):
-                print("tab pressed")
+                self.current_page = self.menu
+                return
             if (keys[pygame.K_ESCAPE]):
                 running = False
                 return
             
-            
-
             # flip() the display to put your work on screen
             fps.render(screen)
             ui.render(screen)
@@ -189,11 +185,7 @@ class UI:
                         return
 
             pygame.display.flip()
-            dt = clock.tick(60) / 1000
-
-        
-        
-
+            dt = clock.tick(165) / 1000 # limit fps to 165 in game
 
 fps = FPS()
 ui = UI()
