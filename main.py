@@ -2,6 +2,7 @@
 import pygame
 import os
 from pygame import mixer;
+from enum import Enum
 
 # pygame setup
 pygame.init()
@@ -15,10 +16,9 @@ display_height = display_info.current_h
 screen = pygame.display.set_mode((700, 500), pygame.RESIZABLE)
 # screen = pygame.display.set_mode((display_width, display_height), pygame.FULLSCREEN) # use to begin in fs
 
-#change this value based on the starting screen
-fullscreen = False
-#change which key activates the fullscreen and resizable screen
-fullscreen_key = pygame.K_f
+init_screen = False
+
+
 
 # file system setup
 current_path = os.path.dirname(__file__)
@@ -50,8 +50,21 @@ class FPS:
         screen.blit(self.text, (0, 0))
 
 class UI:
+    #this variable holds the method to render the current scene
+    #the variable is a pointer to the actual method definitions defined below
+    #to change scene, set this variable to the scene's method and return out of the current method
+    #the while loop will run the next scene's method true this variable
+    current_page = None
+
+    #change this value based on the starting screen
+    fullscreen = None
+    #change which key activates the fullscreen and resizable screen
+    fullscreen_key = pygame.K_f
+
     def __init__(self):
         self.font = pygame.font.SysFont(pygame.font.get_default_font(), 32)
+        self.current_page = self.menu
+        self.fullscreen = init_screen
     
     def render(self, screen):
         self.text = self.font.render('TAB to LEAVE | ESC to QUIT', True, (255, 255, 255))
@@ -60,111 +73,135 @@ class UI:
         self.icon = pygame.transform.scale(icon, (50, 50))
         screen.blit(self.icon, (5, screen.get_height() - 55)) # offset by 5px so it is not stuck in the bottom left
 
+    #this the method to render the menu scene
+    def menu(self):
+        #the screen and running variable are defined global
+        #the initialization of these variables do not exist in this scope rather outside it.
+        global screen, running
+        while True:
+            screen.fill("black")
+            current_background = pygame.transform.scale(original_background, (screen.get_width(), screen.get_height()))
+            screen.blit(current_background, (0, 0))
+
+            areaPlayBtn = pygame.Rect(screen.get_width() / 2 - 152.5, screen.get_height() / 2 - 47.5, 305, 95)
+            screen.blit(btnPlay, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 - 47.5))
+
+            areaExitBtn = pygame.Rect(screen.get_width() / 2 - 152.5, screen.get_height() / 2 + 47.5, 305, 95)
+            screen.blit(btnExit, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 + 47.5))
+
+            areaSettingsBtn = pygame.Rect(screen.get_width() - 144 - 10, 10, 144, 122) # offset 10px from the edge of the screen
+            screen.blit(btnSettings, (screen.get_width() - 144 - 10, 10))
+
+            cursor_pos = pygame.mouse.get_pos()
+            if areaPlayBtn.collidepoint(cursor_pos):
+                screen.blit(btnPlayHover, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 - 47.5))
+            elif areaExitBtn.collidepoint(cursor_pos):
+                screen.blit(btnExitHover, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 + 47.5))
+            elif areaSettingsBtn.collidepoint(cursor_pos):
+                screen.blit(btnSettingsHover, (screen.get_width() - 144 - 10, 10))
+
+            keys = pygame.key.get_pressed()
+
+            #this is the example to switch to the game scene
+            # i just used the p key for example
+            if keys[pygame.K_p]:
+                #you first change the current_page variable to the next scene you want to render
+                self.current_page = self.game
+                return                                
+
+            #when quitting the game, you just set running to false and return out the while loop will terminate the game
+            elif keys[pygame.K_ESCAPE]:
+                running = False
+                return
+
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    return
+                
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    if areaPlayBtn.collidepoint(event.pos):
+                        self.current_page = self.game
+                        return
+                    if areaExitBtn.collidepoint(event.pos):
+                        running = False
+                        return
+                    if areaSettingsBtn.collidepoint(event.pos):
+                        print("setting button pressed")
+
+
+                if event.type == pygame.KEYDOWN and event.key == self.fullscreen_key:
+                    if self.fullscreen: 
+                        screen = pygame.display.set_mode((700, 500), pygame.RESIZABLE)
+                        self.fullscreen = False
+                    else: 
+                        screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+                        self.fullscreen = True
+
+            pygame.display.flip()
+
+        # dt = clock.tick(60) / 1000        
+    
+    def game(self):
+        global running, screen
+        player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+
+        while True:
+            screen.fill("black")
+            pygame.draw.circle(screen, "red", player_pos, 33)
+
+            keys = pygame.key.get_pressed()
+
+            if (keys[pygame.K_w] or keys[pygame.K_UP]) and player_pos.y > 0:
+                player_pos.y -= 500 * dt
+            if (keys[pygame.K_s] or keys[pygame.K_DOWN]) and player_pos.y < screen.get_height():
+                player_pos.y += 500 * dt
+            if (keys[pygame.K_a] or keys[pygame.K_LEFT]) and player_pos.x > 0:
+                player_pos.x -= 500 * dt
+            if (keys[pygame.K_d] or keys[pygame.K_RIGHT]) and player_pos.x < screen.get_width():
+                player_pos.x += 500 * dt
+            if (keys[pygame.K_TAB]):
+                print("tab pressed")
+            if (keys[pygame.K_ESCAPE]):
+                running = False
+                return
+            
+            
+
+            # flip() the display to put your work on screen
+            fps.render(screen)
+            ui.render(screen)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    return
+                
+                if event.type == pygame.KEYDOWN and event.key == self.fullscreen_key:
+                    if self.fullscreen: 
+                        screen = pygame.display.set_mode((700, 500), pygame.RESIZABLE)
+                        self.fullscreen = False
+                        return
+                    else: 
+                        screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+                        self.fullscreen = True
+                        return
+
+            pygame.display.flip()
+            dt = clock.tick(60) / 1000
+
+        
+        
+
+
 fps = FPS()
 ui = UI()
 
-player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
-
-runningGame = False
-runningMenu = True
-runningSettings = False
-
 running = True
-
 while running:
-    # opening the menu UI
-    if runningMenu and not runningSettings:
-        screen.fill("black")
-        current_background = pygame.transform.scale(original_background, (screen.get_width(), screen.get_height()))
-        screen.blit(current_background, (0, 0))
+    ui.current_page()
 
-        areaPlayBtn = pygame.Rect(screen.get_width() / 2 - 152.5, screen.get_height() / 2 - 47.5, 305, 95)
-        screen.blit(btnPlay, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 - 47.5))
-
-        areaExitBtn = pygame.Rect(screen.get_width() / 2 - 152.5, screen.get_height() / 2 + 47.5, 305, 95)
-        screen.blit(btnExit, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 + 47.5))
-
-        areaSettingsBtn = pygame.Rect(screen.get_width() - 144 - 10, 10, 144, 122) # offset 10px from the edge of the screen
-        screen.blit(btnSettings, (screen.get_width() - 144 - 10, 10))
-
-        cursor_pos = pygame.mouse.get_pos()
-        if areaPlayBtn.collidepoint(cursor_pos):
-            screen.blit(btnPlayHover, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 - 47.5))
-        elif areaExitBtn.collidepoint(cursor_pos):
-            screen.blit(btnExitHover, (screen.get_width() / 2 - 152.5, screen.get_height() / 2 + 47.5))
-        elif areaSettingsBtn.collidepoint(cursor_pos):
-            screen.blit(btnSettingsHover, (screen.get_width() - 144 - 10, 10))
-
-        keys = pygame.key.get_pressed()
-        if (keys[pygame.K_f]):
-            runningGame = True
-            runningMenu = False
-        
-        pygame.display.flip()
-
-        dt = clock.tick(60) / 1000
-
-    # opening the settings UI
-    if runningSettings:
-        # implement settings UI here
-        None
-
-    # opening the game UI
-    if runningGame:
-        # fill the screen with a color to wipe away anything from last frame
-        screen.fill("black")
-
-        pygame.draw.circle(screen, "red", player_pos, 33)
-
-        keys = pygame.key.get_pressed()
-
-        if (keys[pygame.K_w] or keys[pygame.K_UP]) and player_pos.y > 0:
-            player_pos.y -= 500 * dt
-        if (keys[pygame.K_s] or keys[pygame.K_DOWN]) and player_pos.y < screen.get_height():
-            player_pos.y += 500 * dt
-        if (keys[pygame.K_a] or keys[pygame.K_LEFT]) and player_pos.x > 0:
-            player_pos.x -= 500 * dt
-        if (keys[pygame.K_d] or keys[pygame.K_RIGHT]) and player_pos.x < screen.get_width():
-            player_pos.x += 500 * dt
-        if (keys[pygame.K_TAB]):
-            runningMenu = True
-            runningGame = False
-        if (keys[pygame.K_ESCAPE]):
-            running = False
-
-        # flip() the display to put your work on screen
-        fps.render(screen)
-        ui.render(screen)
-        pygame.display.flip()
-
-        # dt is delta time in seconds since last frame, loosely caps FPS
-        dt = clock.tick(165) / 1000
-
-    # poll for events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-        if runningSettings:
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                runningSettings = False
-
-        if runningMenu:
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if areaPlayBtn.collidepoint(event.pos):
-                    runningGame = True
-                    runningMenu = False
-                if areaExitBtn.collidepoint(event.pos):
-                    running = False
-                if areaSettingsBtn.collidepoint(event.pos):
-                    runningSettings = True
-
-        if event.type == pygame.KEYDOWN and event.key == fullscreen_key:
-            if fullscreen: 
-                screen = pygame.display.set_mode((700, 500), pygame.RESIZABLE)
-                fullscreen = False
-            else: 
-                screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
-                fullscreen = True
-
+print("quitting python")
 pygame.quit()
+quit()
